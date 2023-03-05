@@ -1,2 +1,2 @@
 # Silver Rain
-Javascript WebGL Library
+JavaScript WebGL Library
