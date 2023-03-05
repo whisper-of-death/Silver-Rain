@@ -1,2 +1,2 @@
 # Silver Rain
-WebGL Framework
+Javascript WebGL Library
