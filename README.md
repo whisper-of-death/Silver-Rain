@@ -1,2 +1,2 @@
-# Silver-Rain
+# Silver Rain
 WebGL Framework
