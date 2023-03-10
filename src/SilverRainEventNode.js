@@ -101,7 +101,6 @@ class SilverRainEventNode extends SilverRainBaseNode {
 		["click", "dblclick", "contextmenu", "mousedown", "mouseup"].forEach((value) => {
 			this.gl.canvas.addEventListener(value, (e) => {
 				if(!this.__getValue(this.enable)) {return;}
-				e.preventDefault();
 				this.__run({
 					event: e,
 					eventName: value
@@ -110,7 +109,6 @@ class SilverRainEventNode extends SilverRainBaseNode {
 		});
         this.gl.canvas.addEventListener("mousemove", (e) => {
 			if(!this.__getValue(this.enable)) {return;}
-            e.preventDefault();
 			const position = this.__getMousePosition(e, true);
 			const coords = this.__getCoords(position);
 			const objects = this.__getObjects(coords).sort(this.__compFunc);
@@ -167,7 +165,6 @@ class SilverRainEventNode extends SilverRainBaseNode {
         }, false);
         this.gl.canvas.addEventListener("wheel", (e) => {
 			if(!this.__getValue(this.enable)) {return;}
-            e.preventDefault();
             this.__run({
                 event: e,
                 eventName: "wheel",
@@ -178,7 +175,6 @@ class SilverRainEventNode extends SilverRainBaseNode {
         }, false);
         this.gl.canvas.addEventListener("touchstart", (e) => {
 			if(!this.__getValue(this.enable)) {return;}
-            e.preventDefault();
             this.__touch.x = e.changedTouches[0].clientX;
             this.__touch.y = e.changedTouches[0].clientY;
             this.__touch.move = false;
@@ -189,7 +185,6 @@ class SilverRainEventNode extends SilverRainBaseNode {
         }, false);
         this.gl.canvas.addEventListener("touchmove", (e) => {
 			if(!this.__getValue(this.enable)) {return;}
-            e.preventDefault();
             const x = e.changedTouches[0].clientX;
             const y = e.changedTouches[0].clientY;
             this.__touch.move = true;
@@ -206,7 +201,6 @@ class SilverRainEventNode extends SilverRainBaseNode {
         }, false);
         this.gl.canvas.addEventListener("touchend", (e) => {
 			if(!this.__getValue(this.enable)) {return;}
-            e.preventDefault();
             this.__run({
                 event: e,
                 eventName: "touchend",
@@ -221,7 +215,6 @@ class SilverRainEventNode extends SilverRainBaseNode {
         }, false);
         this.gl.canvas.addEventListener("touchcancel", (e) => {
 			if(!this.__getValue(this.enable)) {return;}
-            e.preventDefault();
             this.__touch.x = e.changedTouches[0].clientX;
             this.__touch.y = e.changedTouches[0].clientY;
             this.__run({
