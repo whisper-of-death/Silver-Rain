@@ -176,7 +176,7 @@ class SilverRainEventNode extends SilverRainBaseNode {
         this.gl.canvas.addEventListener("touchstart", (e) => {
 			if(!this.__getValue(this.enable)) {return;}
 			e.preventDefault();
-            this.__touch.x = e.changedTouches[0].clientX;
+			this.__touch.x = e.changedTouches[0].clientX;
             this.__touch.y = e.changedTouches[0].clientY;
             this.__touch.move = false;
             this.__run({
