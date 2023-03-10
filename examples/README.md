@@ -1,2 +1,2 @@
-# Silver Rain Examples
-[Presentation](main/index.html)
+# Examples
+[Presentation Ukrainian model](main/index.html)
