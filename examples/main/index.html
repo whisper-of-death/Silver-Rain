@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Main Demo WebGL Framework "Silver Rain"</title>
+<meta charset="utf-8">
+<style>
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+html, body {
+	overflow: hidden;
+}
+</style>
+</head>
+<body>
+</body>
+<script type="module">
+import {SilverRain} from "./../../src/SilverRain.js";
+import {Mat4} from "./../../src/SilverRainMath.js";
+import {Nodes} from "./../../src/SilverRainNodePath.js";
+init();
+
+async function init() {
+	const __maxWidth = 1280;
+	const __maxHeight = 1024;
+	const __margin = 20;
+	const sr = new SilverRain({
+		webglVersion: 1,
+		resize: true,
+	});
+	sr.defineNodes(
+		{
+			name: "menu",
+			class: "SilverRainMenuNode",
+			file: "./../examples/main/js/SilverRainMenuNode.js"
+		},
+		{
+			name: "slider",
+			class: "SilverRainSliderNode",
+			file: "./../examples/main/js/SilverRainSliderNode.js"
+		},
+		{
+			name: "flag",
+			class: "SilverRainFlagNode",
+			file: "./../examples/main/js/SilverRainFlagNode.js"
+		},
+		{
+			name: "animtext",
+			class: "SilverRainAnimTextNode",
+			file: "./../examples/main/js/SilverRainAnimTextNode.js"
+		},
+		{
+			name: "emblem",
+			class: "SilverRainEmblemNode",
+			file: "./../examples/main/js/SilverRainEmblemNode.js"
+		},
+		{
+			name: "videoplayer",
+			class: "SilverRainVideoPlayerNode",
+			file: "./../examples/main/js/SilverRainVideoPlayerNode.js"
+		},
+		{
+			name: "about",
+			class: "SilverRainAboutNode",
+			file: "./../examples/main/js/SilverRainAboutNode.js"
+		},
+	);
+	
+	const trans = Array.from(Nodes, ([name, value]) => (name))
+		.filter(e => e.match(/transitions\//g))
+		.filter(e => !e.match(/displacementmap/g));
+	function shuffle(a) {
+		for (let i = a.length; i; i--) {
+			let j = Math.floor(Math.random() * i);
+			[a[i - 1], a[j]] = [a[j], a[i - 1]];
+		}
+	}
+	shuffle(trans)
+	const selectedTrans = trans.slice(0, 5);
+	
+	await sr.importNodes(
+		"graph",
+		"function",
+ 		"video",
+		"texture",
+		"drawTexture",
+		"event",
+		"menu",
+		"slider",
+		"flag",
+		"animtext",
+		"emblem",
+		"videoPlayer",
+		"about",
+	);
+
+	
+	const graphNode = sr.node("graph", {
+		clear: true,
+		clearColor: [1,1,1,1]
+	});
+	sr.rootNode = graphNode;
+	
+	const eventNode = graphNode.node("event", {
+		name: "Event Node",
+		coordSystem: "left"
+	});
+	
+	let lookatMatrix, projectionMatrix, offsetY, offsetXLeft, offsetXRight, scaleGlobal;
+	const funcNode = graphNode.node("function", {
+		code: () => {
+			lookatMatrix = Mat4.lookatLeft({
+				object: [0,0,0],
+				camera: [0,0,-1000],
+				up: [0,1,0]
+			});
+			scaleGlobal = Math.min(1, sr.gl.drawingBufferHeight / 720);
+			
+			const halfHeight = Math.min(__maxHeight, sr.gl.drawingBufferHeight) / 2;
+			const halfWidth = Math.min(__maxWidth, sr.gl.drawingBufferWidth) / 2;
+			const halfViewportWidth = sr.gl.drawingBufferWidth / 2;
+			const halfViewportHeight = sr.gl.drawingBufferHeight / 2;
+			projectionMatrix = Mat4.orthoLeft({
+				left: -halfViewportWidth,
+				right: halfViewportWidth,
+				bottom: -halfViewportHeight,
+				top: halfViewportHeight,
+				near: 1,
+				far: 3000
+			});
+			offsetY = halfHeight - __margin;
+			offsetXLeft = -halfWidth + __margin;
+			offsetXRight = halfWidth - __margin;
+		},
+		instantCall: true,
+	});
+	
+	const stageData = {
+		stage1: {
+			images: [
+				"./img/stage1/1.webp",
+				"./img/stage1/2.webp",
+				"./img/stage1/3.jpg",
+				"./img/stage1/4.jpg",
+				"./img/stage1/5.webp",
+				"./img/stage1/6.webp",
+				"./img/stage1/7.jpg",
+				"./img/stage1/8.jpg",
+				"./img/stage1/9.webp",
+				"./img/stage1/10.webp",
+			],
+			text: [
+				"Vika",
+				"Ukrainian model"
+			]
+		},
+		stage2: {
+			images: [
+				"./img/stage2/1.jpg",
+				"./img/stage2/2.webp",
+				"./img/stage2/3.jpg",
+				"./img/stage2/4.jpg",
+				"./img/stage2/5.jpg",
+				"./img/stage2/6.jpg",
+				"./img/stage2/7.webp",
+				"./img/stage2/8.webp",
+				"./img/stage2/9.jpg",
+				"./img/stage2/10.jpg",
+			],
+			text: [
+				"Vika was born in Kharkov"
+			]
+		},
+		stage3: {
+			images: [
+				"./img/stage3/1.jpg",
+				"./img/stage3/2.jpg",
+				"./img/stage3/3.jpg",
+				"./img/stage3/4.jpg",
+				"./img/stage3/5.jpg",
+				"./img/stage3/6.jpg",
+				"./img/stage3/7.jpg",
+				"./img/stage3/8.jpg",
+				"./img/stage3/9.jpg",
+				"./img/stage3/10.jpg",
+			],
+			text: [
+				"Vika is studying at university",
+				"Specialty - computer science"
+			]
+		},
+		stage4: {
+			images: [
+				"./img/stage4/1.jpg",
+				"./img/stage4/2.jpg",
+				"./img/stage4/3.jpg",
+				"./img/stage4/4.jpg",
+				"./img/stage4/5.jpg",
+				"./img/stage4/6.jpg",
+				"./img/stage4/7.jpg",
+				"./img/stage4/8.jpg",
+				"./img/stage4/9.jpg",
+				"./img/stage4/10.jpg",
+			],
+		},
+		stage5: {
+		},
+	}
+	// *** Slider ***
+	const sliderNode = graphNode.node("slider", {
+		name: "Slider",
+		images: stageData.stage1.images,
+		lookatMatrix: lookatMatrix,
+		projectionMatrix: () => projectionMatrix,
+		offsetZ: 1,
+		eventNode: eventNode,
+		maxWidth: __maxWidth,
+		maxHeight: __maxHeight,
+		margin: __margin,
+		transitions: selectedTrans,
+	});
+	await sliderNode.init();
+	
+	// *** Anim Text ***
+	const animText = graphNode.node("animText", {
+		name: "Anim Text",
+		fontImageSrc: "./Sdf/Lobster-Regular.png",
+		fontJsonSrc: "./Sdf/Lobster-Regular.json",
+		lookatMatrix: lookatMatrix,
+		projectionMatrix: () => projectionMatrix,
+		offsetY: () => -offsetY + __margin * 2,
+		scale: () => scaleGlobal
+	});
+	await animText.init();
+	animText.setText(stageData.stage1.text);
+
+	let flagNode, coatNode, nureNode, witchNode, videoPlayerNode, aboutNode;
+	
+	// *** Menu ***
+	const allOff = () => {
+		flagNode.enable = false;
+		coatNode.enable = false;
+		nureNode.enable = false;
+		witchNode.enable = false;
+		videoPlayerNode.enable = false;
+		aboutNode.enable = false;
+		videoPlayerNode.stop();
+	}
+	const menuNode = graphNode.node("menu", {
+		name: "Menu",
+		fontImageSrc: "./Sdf/Dancing.png",
+		fontJsonSrc: "./Sdf/Dancing.json",
+		eventNode: eventNode,
+		items: [
+			{text: "Main", onclick: (e) => {
+				e.stopPropagation();
+				allOff();
+				menuNode.activeItem = 0;
+				sliderNode.images = stageData.stage1.images;
+				sliderNode.reload();
+				animText.abort();
+				animText.setText(stageData.stage1.text);
+				animText.start();
+				flagNode.enable = true;
+			}},
+			{text: "City", onclick: (e) => {
+				e.stopPropagation();
+				allOff();
+				menuNode.activeItem = 1;
+				sliderNode.images = stageData.stage2.images;
+				sliderNode.reload();
+				animText.abort();
+				animText.setText(stageData.stage2.text);
+				animText.start();
+				coatNode.enable = true;
+			}},
+			{text: "Education", onclick: (e) => {
+				e.stopPropagation();
+				allOff();
+				menuNode.activeItem = 2;
+				sliderNode.images = stageData.stage3.images;
+				sliderNode.reload();
+				animText.abort();
+				animText.setText(stageData.stage3.text);
+				animText.start();
+				nureNode.enable = true;
+			}},
+			{text: "Gallery", onclick: (e) => {
+				e.stopPropagation();
+				allOff();
+				menuNode.activeItem = 3;
+				sliderNode.images = stageData.stage4.images;
+				sliderNode.reload();
+				animText.abort();
+				witchNode.enable = true;
+			}},
+			{text: "Video", onclick: (e) => {
+				e.stopPropagation();
+				allOff();
+				menuNode.activeItem = 4;
+				sliderNode.stop();
+				animText.abort();
+				videoPlayerNode.enable = true;
+			}},
+			{text: "About", onclick: (e) => {
+				e.stopPropagation();
+				allOff();
+				menuNode.activeItem = 5;
+				sliderNode.stop();
+				animText.abort();
+				aboutNode.enable = true;
+			}}
+		],
+		lookatMatrix: lookatMatrix,
+		projectionMatrix: () => projectionMatrix,
+		offsetX: () => offsetXLeft,
+		offsetY: () => offsetY,
+	}).addParentNodes(sliderNode);
+	await menuNode.init();
+	
+	// *** Flag ***
+	flagNode = graphNode.node("flag", {
+		name: "Flag",
+		src: "./video/uflag.mp4",
+		lookatMatrix: lookatMatrix,
+		projectionMatrix: () => projectionMatrix,
+		offsetX: () => offsetXRight,
+		offsetY: () => offsetY,
+		offsetZ: -1
+	});
+	await flagNode.init();
+	
+	// *** Coat ***
+	coatNode = graphNode.node("emblem", {
+		name: "Coat",
+		src: "./img/KharkovCoat.png",
+		lookatMatrix: lookatMatrix,
+		projectionMatrix: () => projectionMatrix,
+		offsetX: () => offsetXRight,
+		offsetY: () => offsetY,
+		offsetZ: -300,
+		scale: 0.7,
+		enable: false
+	}).addParentNodes(sliderNode);
+	await coatNode.init();
+
+	// *** Nure ***
+	nureNode = graphNode.node("emblem", {
+		name: "Nure",
+		src: "./img/nure.png",
+		lookatMatrix: lookatMatrix,
+		projectionMatrix: () => projectionMatrix,
+		offsetX: () => offsetXRight,
+		offsetY: () => offsetY,
+		offsetZ: -300,
+		scale: 0.7,
+		enable: false
+	}).addParentNodes(sliderNode);
+	await nureNode.init();
+
+	// *** Witch ***
+	witchNode = graphNode.node("emblem", {
+		name: "Witch",
+		src: "./img/witch.png",
+		lookatMatrix: lookatMatrix,
+		projectionMatrix: () => projectionMatrix,
+		offsetX: () => offsetXRight,
+		offsetY: () => offsetY,
+		offsetZ: -300,
+		scale: 0.1,
+		enable: false
+	}).addParentNodes(sliderNode);
+	await witchNode.init();
+	
+	// *** Video Player ***
+	videoPlayerNode = graphNode.node("videoPlayer", {
+		name: "Video Player",
+		src: "./video/vika.mp4",
+		lookatMatrix: lookatMatrix,
+		projectionMatrix: () => projectionMatrix,
+		eventNode: eventNode,
+		enable: false
+	});
+	await videoPlayerNode.init();
+	
+	// *** About ***
+	aboutNode = graphNode.node("about", {
+		name: "About",
+		fontImageSrc: "./Sdf/Dancing.png",
+		fontJsonSrc: "./Sdf/Dancing.json",
+		lookatMatrix: lookatMatrix,
+		projectionMatrix: () => projectionMatrix,
+		eventNode: eventNode,
+		scale: () => scaleGlobal,
+		enable: false
+	});
+	await aboutNode.init();
+	
+	graphNode.sort();
+	animText.start();
+	sliderNode.start();
+
+	function anim() {
+		sr.update();
+		requestAnimationFrame(anim);
+	}
+	requestAnimationFrame(anim);
+}
+
+</script>
+</html>
