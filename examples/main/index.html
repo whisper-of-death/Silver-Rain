@@ -246,71 +246,91 @@ async function init() {
 		witchNode.enable = false;
 		videoPlayerNode.enable = false;
 		aboutNode.enable = false;
+		animText.abort();
 		videoPlayerNode.stop();
 	}
+	let menuReady = true;
 	const menuNode = graphNode.node("menu", {
 		name: "Menu",
 		fontImageSrc: "./Sdf/Dancing.png",
 		fontJsonSrc: "./Sdf/Dancing.json",
 		eventNode: eventNode,
 		items: [
-			{text: "Main", onclick: (e) => {
+			{text: "Main", onclick: async (e) => {
 				e.stopPropagation();
-				allOff();
-				menuNode.activeItem = 0;
-				sliderNode.images = stageData.stage1.images;
-				sliderNode.reload();
-				animText.abort();
-				animText.setText(stageData.stage1.text);
-				animText.start();
-				flagNode.enable = true;
+				if(menuReady) {
+					menuReady = false;
+					allOff();
+					menuNode.activeItem = 0;
+					sliderNode.images = stageData.stage1.images;
+					await sliderNode.reload();
+					animText.setText(stageData.stage1.text);
+					animText.start();
+					flagNode.enable = true;
+					menuReady = true;
+				}
 			}},
-			{text: "City", onclick: (e) => {
+			{text: "City", onclick: async (e) => {
 				e.stopPropagation();
-				allOff();
-				menuNode.activeItem = 1;
-				sliderNode.images = stageData.stage2.images;
-				sliderNode.reload();
-				animText.abort();
-				animText.setText(stageData.stage2.text);
-				animText.start();
-				coatNode.enable = true;
+				if(menuReady) {
+					menuReady = false;
+					allOff();
+					menuNode.activeItem = 1;
+					sliderNode.images = stageData.stage2.images;
+					await sliderNode.reload();
+					animText.setText(stageData.stage2.text);
+					animText.start();
+					coatNode.enable = true;
+					menuReady = true;
+				}
 			}},
-			{text: "Education", onclick: (e) => {
+			{text: "Education", onclick: async (e) => {
 				e.stopPropagation();
-				allOff();
-				menuNode.activeItem = 2;
-				sliderNode.images = stageData.stage3.images;
-				sliderNode.reload();
-				animText.abort();
-				animText.setText(stageData.stage3.text);
-				animText.start();
-				nureNode.enable = true;
+				if(menuReady) {
+					menuReady = false;
+					allOff();
+					menuNode.activeItem = 2;
+					sliderNode.images = stageData.stage3.images;
+					await sliderNode.reload();
+					animText.setText(stageData.stage3.text);
+					animText.start();
+					nureNode.enable = true;
+					menuReady = true;
+				}
 			}},
-			{text: "Gallery", onclick: (e) => {
+			{text: "Gallery", onclick: async (e) => {
 				e.stopPropagation();
-				allOff();
-				menuNode.activeItem = 3;
-				sliderNode.images = stageData.stage4.images;
-				sliderNode.reload();
-				animText.abort();
-				witchNode.enable = true;
+				if(menuReady) {
+					menuReady = false;
+					allOff();
+					menuNode.activeItem = 3;
+					sliderNode.images = stageData.stage4.images;
+					await sliderNode.reload();
+					witchNode.enable = true;
+					menuReady = true;
+				}
 			}},
 			{text: "Video", onclick: (e) => {
 				e.stopPropagation();
-				allOff();
-				menuNode.activeItem = 4;
-				sliderNode.stop();
-				animText.abort();
-				videoPlayerNode.enable = true;
+				if(menuReady) {
+					menuReady = false;
+					allOff();
+					menuNode.activeItem = 4;
+					sliderNode.stop();
+					videoPlayerNode.enable = true;
+					menuReady = true;
+				}
 			}},
 			{text: "About", onclick: (e) => {
 				e.stopPropagation();
-				allOff();
-				menuNode.activeItem = 5;
-				sliderNode.stop();
-				animText.abort();
-				aboutNode.enable = true;
+				if(menuReady) {
+					menuReady = false;
+					allOff();
+					menuNode.activeItem = 5;
+					sliderNode.stop();
+					menuReady = true;
+					aboutNode.enable = true;
+				}
 			}}
 		],
 		lookatMatrix: lookatMatrix,

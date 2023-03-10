@@ -58,6 +58,12 @@ class SilverRainAboutNode extends SilverRainBaseNode {
 				target: "_blank"
 			});
 		};
+		const linkToWebgl = () => {
+			eventNode.link({
+				url: "https://github.com/whisper-of-death/Silver-Rain",
+				target: "_blank"
+			});
+		};
 		const drawText1 = this.__graphNode.node("drawText", {
 			name: "Draw Text",
 			text: "Model - Vika",
@@ -71,22 +77,6 @@ class SilverRainAboutNode extends SilverRainBaseNode {
 			size: 42,
 // 			size: () => 42 * this.__getValue(this.scale),
 			eventNode: eventNode
-		});
-		eventNode.setCursorStyle({
-			object: drawText1,
-			cursor: "pointer"
-		})
-		.addEventListener({
-			event: "click",
-			object: drawText1,
-			phase: "down",
-			func: linkToVika
-		})
-		.addEventListener({
-            event: "touchclick",
-			object: drawText1,
-			phase: "down",
-			func: linkToVika
 		});
 		const drawText2 = this.__graphNode.node("drawText", {
 			name: "Draw Text",
@@ -113,6 +103,35 @@ class SilverRainAboutNode extends SilverRainBaseNode {
 			smoothMsdf: 5,
 			size: 42,
 // 			size: () => 42 * this.__getValue(this.scale),
+			eventNode: eventNode
+		});
+		eventNode.setCursorStyle({
+			object: [drawText1, drawText3],
+			cursor: "pointer"
+		})
+		.addEventListener({
+			event: "click",
+			object: drawText1,
+			phase: "down",
+			func: linkToVika
+		})
+		.addEventListener({
+            event: "touchclick",
+			object: drawText1,
+			phase: "down",
+			func: linkToVika
+		})
+		.addEventListener({
+			event: "click",
+			object: drawText3,
+			phase: "down",
+			func: linkToWebgl
+		})
+		.addEventListener({
+            event: "touchclick",
+			object: drawText3,
+			phase: "down",
+			func: linkToWebgl
 		});
         this.__graphNode.sort();
         return this;

@@ -225,7 +225,7 @@ class SilverRainMenuNode extends SilverRainBaseNode {
 				id: name,
 				cursor: "pointer"
 			});
-			if(Reflect.has(item, "onclick") && this.__getType(item.onclick) === "function") {
+			if(Reflect.has(item, "onclick") && ["function", "asyncfunction"].includes(this.__getType(item.onclick))) {
 				eventNode
 				.addEventListener({
 					id: name,
