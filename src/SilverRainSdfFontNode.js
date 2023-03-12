@@ -18,10 +18,11 @@ class SilverRainSdfFontNode extends SilverRainBaseNode {
 		chars: new Map(),
 		info: {}
 	};
-	image = new Image();
 	texture = undefined;
 	width = undefined;
 	height = undefined;
+	// Local
+	__image = new Image();
 	constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
 		this.__loadArguments(argObject, [
@@ -35,6 +36,7 @@ class SilverRainSdfFontNode extends SilverRainBaseNode {
 		return Promise.all([this.__loadImage(), this.__loadJson()])
 		.then(() => {
 			this.__init();
+			this.__image = undefined;
 		});
 	}
 	async __loadJson() {
@@ -61,15 +63,15 @@ class SilverRainSdfFontNode extends SilverRainBaseNode {
 			.then(response => response.blob())
 			.then((blob) => {
 				const objectURL = URL.createObjectURL(blob);
-				this.image.onload = () => {
+				this.__image.onload = () => {
 					URL.revokeObjectURL(objectURL);
 					ok(this);
 				};
-				this.image.onerror = (e) => {
+				this.__image.onerror = (e) => {
 					console.error(e);
 					error(new Error(this.__errorMessage(imageSrc)));
 				};
-				this.image.src = objectURL;
+				this.__image.src = objectURL;
 			})
 			.catch((e) => {
 				console.error(e);
@@ -81,11 +83,11 @@ class SilverRainSdfFontNode extends SilverRainBaseNode {
 		return `Error loading file '${aMsg}'`;
 	}
     __init() {
-        this.width = this.image.width;
-        this.height = this.image.height;
+        this.width = this.__image.width;
+        this.height = this.__image.height;
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
-		this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.image);
+		this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.__image);
 		this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
 		this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
 		this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
