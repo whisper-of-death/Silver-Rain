@@ -6,7 +6,7 @@
 //             SilverRainRegionNode
 // ----------------------------------------------
 
-import {SilverRainBase3dNode} from './SilverRainBaseNode.js';
+import {SilverRainBaseNode} from './SilverRainBaseNode.js';
 import {Mat4} from './SilverRainMath.js';
 
 class SilverRainRegionNode extends SilverRainBaseNode {
