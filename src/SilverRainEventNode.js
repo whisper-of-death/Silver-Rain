@@ -35,6 +35,8 @@ class SilverRainEventNode extends SilverRainBaseNode {
 	__status = {
 		leftButtonDown: false,
 		move: false,
+		x: 0,
+		y: 0
 	};
     constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
@@ -101,6 +103,8 @@ class SilverRainEventNode extends SilverRainBaseNode {
 			});
 			if(e.button === 0) {
 				this.__status.leftButtonDown = true;
+				this.__status.x = e.clientX;
+				this.__status.y = e.clientY;
 			}
 			this.__status.move = false;
 		}, false);
@@ -129,12 +133,20 @@ class SilverRainEventNode extends SilverRainBaseNode {
 			const overObjects = objects.filter(v => !this.__objectsId.includes(v.id));
             const outObjects = this.__objects.filter(v => !objectsId.includes(v.id));
 			if(this.__status.leftButtonDown) {
+				const x = e.clientX;
+				const y = e.clientY;
 				this.__run({
 					event: e,
 					eventName: "touchmove",
 					objects: objects,
-					position: position
+					position: position,
+					properties: {
+						deltaX: x - this.__status.x,
+						deltaY: y - this.__status.y,
+					}
 				});
+				this.__status.x = x;
+				this.__status.y = y;
 			}
             let styleCursor = undefined;
 			if(outObjects.length > 0) {
