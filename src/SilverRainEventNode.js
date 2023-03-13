@@ -21,6 +21,8 @@ class SilverRainEventNode extends SilverRainBaseNode {
 	__objects = [];
 	__objectsId = [];
 	__event = {
+		click: {up: new Map(), down: new Map()},
+		touchmove: {up: new Map(), down: new Map()},
 		over: {up: new Map(), down: new Map()},
 		down: {up: new Map(), down: new Map()},
 		move: {up: new Map(), down: new Map()},
@@ -30,10 +32,9 @@ class SilverRainEventNode extends SilverRainBaseNode {
 	}
 	__cursorStyle = new Map();
 	__aElement = document.createElement("a");
-	__touch = {
+	__status = {
+		leftButtonDown: false,
 		move: false,
-		x: undefined,
-		y: undefined
 	};
     constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
@@ -98,6 +99,10 @@ class SilverRainEventNode extends SilverRainBaseNode {
 				event: e,
 				eventName: "down"
 			});
+			if(e.button === 0) {
+				this.__status.leftButtonDown = true;
+			}
+			this.__status.move = false;
 		}, false);
 		this.gl.canvas.addEventListener("pointerup", (e) => {
 			if(!this.__getValue(this.enable)) {return;}
@@ -105,15 +110,32 @@ class SilverRainEventNode extends SilverRainBaseNode {
 				event: e,
 				eventName: "up"
 			});
+			if(this.__status.leftButtonDown && !this.__status.move) {
+				this.__run({
+					event: e,
+					eventName: "click",
+				});
+			}
+			this.__status.leftButtonDown = false;
+			this.__status.move = false;
 		}, false);
 		this.gl.canvas.addEventListener("pointermove", (e) => {
 			if(!this.__getValue(this.enable)) {return;}
+			this.__status.move = true;
 			const position = this.__getPointerPosition(e, true);
 			const coords = this.__getCoords(position);
 			const objects = this.__getObjects(coords).sort(this.__compFunc);
             const objectsId = objects.map(function(e) {return e.id;});
 			const overObjects = objects.filter(v => !this.__objectsId.includes(v.id));
             const outObjects = this.__objects.filter(v => !objectsId.includes(v.id));
+			if(this.__status.leftButtonDown) {
+				this.__run({
+					event: e,
+					eventName: "touchmove",
+					objects: objects,
+					position: position
+				});
+			}
             let styleCursor = undefined;
 			if(outObjects.length > 0) {
 				styleCursor = "default";

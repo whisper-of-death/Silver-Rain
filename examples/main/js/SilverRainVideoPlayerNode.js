@@ -124,7 +124,7 @@ class SilverRainVideoPlayerNode extends SilverRainBaseNode {
 			cursor: "pointer"
 		})
 		eventNode.addEventListener({
-			event: "down",
+			event: "click",
 			object: drawVideo,
 			phase: "down",
 			func: playOrPause

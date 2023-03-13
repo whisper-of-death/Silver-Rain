@@ -110,13 +110,13 @@ class SilverRainAboutNode extends SilverRainBaseNode {
 			cursor: "pointer"
 		})
 		.addEventListener({
-			event: "down",
+			event: "click",
 			object: drawText1,
 			phase: "down",
 			func: linkToVika
 		})
 		.addEventListener({
-			event: "down",
+			event: "click",
 			object: drawText3,
 			phase: "down",
 			func: linkToWebgl

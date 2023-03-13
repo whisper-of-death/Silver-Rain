@@ -294,7 +294,7 @@ class SilverRainSliderNode extends SilverRainBaseNode {
 		})
 		.addEventListener({
 			object: this.__drawTextureNode,
-			event: "down",
+			event: "click",
 			phase: "down",
 			func: pauseFunc
 		})
@@ -315,7 +315,6 @@ class SilverRainSliderNode extends SilverRainBaseNode {
 				}
 			}
 		})
-		/*
 		.addEventListener({
 			object: this.__drawTextureNode,
 			event: "touchmove",
@@ -332,8 +331,7 @@ class SilverRainSliderNode extends SilverRainBaseNode {
 					__delay = performance.now();
 				}
 			}
-		})
-		*/
+		});
 		const pauseButton = this.__graph.node("canvas", {
 			name: "Pause Button",
 			width: 256,
@@ -382,7 +380,7 @@ class SilverRainSliderNode extends SilverRainBaseNode {
 		})
 		.addEventListener({
 			object: drawPauseButton,
-			event: "down",
+			event: "click",
 			phase: "down",
 			func: pauseFunc
 		});
