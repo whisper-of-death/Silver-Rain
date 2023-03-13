@@ -75,9 +75,11 @@ class SilverRainEffectNode extends SilverRainFramebuffer2dNode {
         this.gl.vertexAttribPointer(draw.attribute.vertex, 2, this.gl.FLOAT, false, 0, 0);
         this.gl.enableVertexAttribArray(draw.attribute.vertex);
 
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, draw.buffer.texture);
-        this.gl.vertexAttribPointer(draw.attribute.texture, 2, this.gl.FLOAT, false, 0, 0);
-        this.gl.enableVertexAttribArray(draw.attribute.texture);
+        if(draw.attribute.texture !== -1) {
+			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, draw.buffer.texture);
+			this.gl.vertexAttribPointer(draw.attribute.texture, 2, this.gl.FLOAT, false, 0, 0);
+			this.gl.enableVertexAttribArray(draw.attribute.texture);
+		}
 
         this.gl.activeTexture(this.gl.TEXTURE0);
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.__getValue(this.textureNode).texture);

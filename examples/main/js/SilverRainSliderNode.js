@@ -294,13 +294,7 @@ class SilverRainSliderNode extends SilverRainBaseNode {
 		})
 		.addEventListener({
 			object: this.__drawTextureNode,
-			event: "click",
-			phase: "down",
-			func: pauseFunc
-		})
-		.addEventListener({
-			object: this.__drawTextureNode,
-			event: "touchclick",
+			event: "down",
 			phase: "down",
 			func: pauseFunc
 		})
@@ -321,6 +315,7 @@ class SilverRainSliderNode extends SilverRainBaseNode {
 				}
 			}
 		})
+		/*
 		.addEventListener({
 			object: this.__drawTextureNode,
 			event: "touchmove",
@@ -338,6 +333,7 @@ class SilverRainSliderNode extends SilverRainBaseNode {
 				}
 			}
 		})
+		*/
 		const pauseButton = this.__graph.node("canvas", {
 			name: "Pause Button",
 			width: 256,
@@ -386,13 +382,7 @@ class SilverRainSliderNode extends SilverRainBaseNode {
 		})
 		.addEventListener({
 			object: drawPauseButton,
-			event: "click",
-			phase: "down",
-			func: pauseFunc
-		})
-		.addEventListener({
-			object: drawPauseButton,
-			event: "touchclick",
+			event: "down",
 			phase: "down",
 			func: pauseFunc
 		});

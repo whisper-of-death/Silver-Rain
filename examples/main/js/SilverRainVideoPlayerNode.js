@@ -48,6 +48,7 @@ class SilverRainVideoPlayerNode extends SilverRainBaseNode {
 		const videoTexture = this.__graphNode.node("texture", {
 			name: "Video Texture",
 			sourceNode: this.__videoNode,
+			update: () => this.__videoNode.video.played
 		});
 		let tMatrixVideo, tMatrixButton, playButton;
 		const funcNode = this.__graphNode.node("function", {
@@ -123,13 +124,7 @@ class SilverRainVideoPlayerNode extends SilverRainBaseNode {
 			cursor: "pointer"
 		})
 		eventNode.addEventListener({
-			event: "click",
-			object: drawVideo,
-			phase: "down",
-			func: playOrPause
-		})
-		.addEventListener({
-            event: "touchclick",
+			event: "down",
 			object: drawVideo,
 			phase: "down",
 			func: playOrPause

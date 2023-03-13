@@ -137,6 +137,10 @@ const Nodes = new Map([
 		class: "SilverRainSepiaNode",
 		file: "./Effects/SilverRainSepiaNode.js"
 	}],
+	["effects/droste", {
+		class: "SilverRainDrosteNode",
+		file: "./Effects/SilverRainDrosteNode.js"
+	}],
 	// Transitions
 	["transitions/mix", {
 		class: "SilverRainMixNode",

@@ -15,27 +15,18 @@ class SilverRainEventNode extends SilverRainBaseNode {
 	coordSystem = "left";
 	// Global
 	// Local
-	__touchEvents = ["touchstart", "touchend", "touchmove", "touchcancel", "touchclick"];
 	__compFunc = undefined;
 	__compFuncInverse = undefined;
 	__object = new Map();
 	__objects = [];
 	__objectsId = [];
 	__event = {
-		click: {up: new Map(), down: new Map()},
-		dblclick: {up: new Map(), down: new Map()},
-		contextmenu: {up: new Map(), down: new Map()},
-		mousemove: {up: new Map(), down: new Map()},
-		mousedown: {up: new Map(), down: new Map()},
-		mouseup: {up: new Map(), down: new Map()},
-		mouseover: {up: new Map(), down: new Map()},
-		mouseout: {up: new Map(), down: new Map()},
+		over: {up: new Map(), down: new Map()},
+		down: {up: new Map(), down: new Map()},
+		move: {up: new Map(), down: new Map()},
+		up: {up: new Map(), down: new Map()},
+		out: {up: new Map(), down: new Map()},
 		wheel: {up: new Map(), down: new Map()},
-		touchstart: {up: new Map(), down: new Map()},
-		touchmove: {up: new Map(), down: new Map()},
-		touchend: {up: new Map(), down: new Map()},
-		touchcancel: {up: new Map(), down: new Map()},
-		touchclick: {up: new Map(), down: new Map()},
 	}
 	__cursorStyle = new Map();
 	__aElement = document.createElement("a");
@@ -64,6 +55,9 @@ class SilverRainEventNode extends SilverRainBaseNode {
 	}
     addEventListener(aData) {
         const eventData = this.__event[aData.event.toLowerCase()];
+		if(!eventData) {
+			this.__error(`Unknown event type '${aData.event}'`);
+		}
 		const eventSubdata = (aData.phase.toLowerCase() === "down") ? eventData.down : eventData.up;
 		let id;
 		if(Object.hasOwn(aData, "id")) {
@@ -98,24 +92,28 @@ class SilverRainEventNode extends SilverRainBaseNode {
 		}
     }
     __init() {
-		["click", "dblclick", "contextmenu", "mousedown", "mouseup"].forEach((value) => {
-			this.gl.canvas.addEventListener(value, (e) => {
-				if(!this.__getValue(this.enable)) {return;}
-				this.__run({
-					event: e,
-					eventName: value
-				});
-			}, false);
-		});
-        this.gl.canvas.addEventListener("mousemove", (e) => {
+		this.gl.canvas.addEventListener("pointerdown", (e) => {
 			if(!this.__getValue(this.enable)) {return;}
-			const position = this.__getMousePosition(e, true);
+			this.__run({
+				event: e,
+				eventName: "down"
+			});
+		}, false);
+		this.gl.canvas.addEventListener("pointerup", (e) => {
+			if(!this.__getValue(this.enable)) {return;}
+			this.__run({
+				event: e,
+				eventName: "up"
+			});
+		}, false);
+		this.gl.canvas.addEventListener("pointermove", (e) => {
+			if(!this.__getValue(this.enable)) {return;}
+			const position = this.__getPointerPosition(e, true);
 			const coords = this.__getCoords(position);
 			const objects = this.__getObjects(coords).sort(this.__compFunc);
             const objectsId = objects.map(function(e) {return e.id;});
 			const overObjects = objects.filter(v => !this.__objectsId.includes(v.id));
             const outObjects = this.__objects.filter(v => !objectsId.includes(v.id));
-
             let styleCursor = undefined;
 			if(outObjects.length > 0) {
 				styleCursor = "default";
@@ -135,11 +133,10 @@ class SilverRainEventNode extends SilverRainBaseNode {
 			if(styleCursor) {
 				this.gl.canvas.style.cursor = styleCursor;
 			}
-
             if(objects.length > 0) {
 				this.__run({
 					event: e,
-					eventName: "mousemove",
+					eventName: "move",
 					objects: objects,
 					position: position
 				});
@@ -147,7 +144,7 @@ class SilverRainEventNode extends SilverRainBaseNode {
 			if(outObjects.length > 0) {
 				this.__run({
 					event: e,
-					eventName: "mouseout",
+					eventName: "out",
 					objects: outObjects,
 					position: position
 				});
@@ -155,14 +152,14 @@ class SilverRainEventNode extends SilverRainBaseNode {
 			if(overObjects.length > 0) {
 				this.__run({
 					event: e,
-					eventName: "mouseover",
+					eventName: "over",
 					objects: overObjects,
 					position: position
 				});
 			}
             this.__objects = objects;
             this.__objectsId = objectsId;
-        }, false);
+		}, false);
         this.gl.canvas.addEventListener("wheel", (e) => {
 			if(!this.__getValue(this.enable)) {return;}
             this.__run({
@@ -173,59 +170,6 @@ class SilverRainEventNode extends SilverRainBaseNode {
                 }
             });
         }, false);
-        this.gl.canvas.addEventListener("touchstart", (e) => {
-			if(!this.__getValue(this.enable)) {return;}
-			e.preventDefault();
-			this.__touch.x = e.changedTouches[0].clientX;
-            this.__touch.y = e.changedTouches[0].clientY;
-            this.__touch.move = false;
-            this.__run({
-                event: e,
-                eventName: "touchstart",
-            });
-        }, false);
-        this.gl.canvas.addEventListener("touchmove", (e) => {
-			if(!this.__getValue(this.enable)) {return;}
-			e.preventDefault();
-            const x = e.changedTouches[0].clientX;
-            const y = e.changedTouches[0].clientY;
-            this.__touch.move = true;
-            this.__run({
-                event: e,
-                eventName: "touchmove",
-                properties: {
-                    deltaX: x - this.__touch.x,
-                    deltaY: y - this.__touch.y,
-                }
-            });
-            this.__touch.x = x;
-            this.__touch.y = y;
-        }, false);
-        this.gl.canvas.addEventListener("touchend", (e) => {
-			if(!this.__getValue(this.enable)) {return;}
-			e.preventDefault();
-            this.__run({
-                event: e,
-                eventName: "touchend",
-            });
-            if(!this.__touch.move) {
-                this.__run({
-                    event: e,
-                    eventName: "touchclick",
-                });
-            }
-            this.__touch.move = false;
-        }, false);
-        this.gl.canvas.addEventListener("touchcancel", (e) => {
-			if(!this.__getValue(this.enable)) {return;}
-			e.preventDefault();
-            this.__touch.x = e.changedTouches[0].clientX;
-            this.__touch.y = e.changedTouches[0].clientY;
-            this.__run({
-                event: e,
-                eventName: "touchcancel",
-            });
-        }, false);
     }
     __run(aData) {
         const eventData = this.__event[aData.eventName];
@@ -233,11 +177,7 @@ class SilverRainEventNode extends SilverRainBaseNode {
 		if(Object.hasOwn(aData, "position")) {
 			position = aData.position;
 		} else {
-			if(this.__touchEvents.includes(aData.eventName)) {
-				position = this.__getTouchPosition(aData.event, true);
-			} else {
-				position = this.__getMousePosition(aData.event, true);
-			}
+			position = this.__getPointerPosition(aData.event, true);
 		}
 		if(Object.hasOwn(aData, "objects")) {
 			objects = aData.objects;
@@ -384,7 +324,7 @@ class SilverRainEventNode extends SilverRainBaseNode {
             value.needDelete = true;
         });
     }
-    __getMousePosition(event, swapY = false) {
+    __getPointerPosition(event, swapY = false) {
         const rect = event.target.getBoundingClientRect();
         if(swapY === true) {
             return {
@@ -395,22 +335,6 @@ class SilverRainEventNode extends SilverRainBaseNode {
             return {
                 x: event.clientX - rect.left,
                 y: event.clientY - rect.top
-            };
-        }
-    }
-    __getTouchPosition(event, swapY = false) {
-        const touch = event.changedTouches[0];
-        const target = touch.target;
-        const rect = target.getBoundingClientRect();
-        if(swapY === true) {
-            return {
-                x: touch.clientX - rect.left,
-                y: target.height - (touch.clientY - rect.top)
-            };
-        } else {
-            return {
-                x: touch.clientX - rect.left,
-                y: touch.clientY - rect.top
             };
         }
     }
