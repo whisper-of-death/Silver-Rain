@@ -128,14 +128,7 @@ class SilverRainVideoPlayerNode extends SilverRainBaseNode {
 			object: drawVideo,
 			phase: "down",
 			func: playOrPause
-		})
-		eventNode.addEventListener({
-			event: "touchmove",
-			object: drawVideo,
-			phase: "down",
-			func: playOrPause
 		});
-
 		this.__graphNode.sort();
         return this;
 	}
