@@ -271,6 +271,12 @@ class SilverRainMenuNode extends SilverRainBaseNode {
 			textureNode: bgEffectNode,
 			eventNode: eventNode
 		});
+		eventNode.addEventListener({
+			object: drawTextureBg,
+			event: "touchMove",
+			phase: "down",
+			func: e => e.stopPropagation()
+		});
 		const funcNode2 = this.__graphNode.node("function", {
 			name: "Function Node 2",
 			code: () => {

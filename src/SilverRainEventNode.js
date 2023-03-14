@@ -95,6 +95,10 @@ class SilverRainEventNode extends SilverRainBaseNode {
 		}
     }
     __init() {
+		this.gl.canvas.addEventListener("pointerout", (e) => {
+			this.__status.leftButtonDown = false;
+			this.__status.move = false;
+		}, false);
 		this.gl.canvas.addEventListener("pointerdown", (e) => {
 			if(!this.__getValue(this.enable)) {return;}
 			this.__run({
