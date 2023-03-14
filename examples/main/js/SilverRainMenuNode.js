@@ -232,6 +232,12 @@ class SilverRainMenuNode extends SilverRainBaseNode {
 					event: "click",
 					phase: "down",
 					func: item.onclick
+				})
+				.addEventListener({
+					id: name,
+					event: "touchmove",
+					phase: "down",
+					func: item.onclick
 				});
 			}
 		}

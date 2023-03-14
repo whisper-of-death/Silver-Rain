@@ -121,6 +121,18 @@ class SilverRainAboutNode extends SilverRainBaseNode {
 			phase: "down",
 			func: linkToWebgl
 		})
+		.addEventListener({
+			event: "touchmove",
+			object: drawText1,
+			phase: "down",
+			func: linkToVika
+		})
+		.addEventListener({
+			event: "touchmove",
+			object: drawText3,
+			phase: "down",
+			func: linkToWebgl
+		})
         this.__graphNode.sort();
         return this;
 	}
