@@ -54,7 +54,7 @@ class SilverRainAboutNode extends SilverRainBaseNode {
 		await sdfFont.load().catch(e => console.error(e));
 		const linkToVika = () => {
 			eventNode.link({
-				url: "https://t.me/vikketti",
+				url: "https://www.instagram.com/vikketti/",
 				target: "_blank"
 			});
 		};
