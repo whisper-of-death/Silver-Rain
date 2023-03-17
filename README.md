@@ -9,9 +9,9 @@ Library distributed under the MIT license.
 
 #
 ```
-The rain of oblivion will fall on the earth.
-Old knowledge will be forgotten.
-The Great Witch will give new knowledge.
-People will discover new worlds.
+After the rain of oblivion falls on the earth,
+the old knowledge will be lost.
+The Great Witch will give people new knowledge
+that will allow them to discover new worlds.
 ```
 The last quatrain of Nostradamus.
