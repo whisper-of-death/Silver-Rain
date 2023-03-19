@@ -1,5 +1,5 @@
 # Silver Rain
-JavaScript WebGL Library
+JavaScript WebGL Library.
 
 Library distributed under the MIT license.
 
