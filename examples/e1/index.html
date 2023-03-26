@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebGL Framework "Silver Rain" - Gallery 3d</title>
+<meta charset="utf-8">
+<style>
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+html, body {
+	overflow: hidden;
+}
+</style>
+</head>
+<body>
+</body>
+<script type="module">
+import {SilverRain} from "./../../src/SilverRain.js";
+import {Mat4} from "./../../src/SilverRainMath.js";
+init();
+
+async function init() {
+	const sr = new SilverRain({
+		webglVersion: 1,
+		resize: true,
+	}).cullFace("disable", "back");
+	await sr.importNodes(
+		"graph",
+		"function",
+		"image",
+		"texture",
+		"drawTexture",
+		"camera",
+		"event",
+		"region",
+		"ease"
+	);
+	const graphNode = sr.node("graph", {
+		clear: true,
+	});
+	sr.rootNode = graphNode;
+	const images = [
+		"./img/photo1.jpg",
+		"./img/photo2.jpg",
+		"./img/photo3.jpg",
+		"./img/photo4.jpg",
+		"./img/photo5.jpg",
+		"./img/photo6.jpg",
+		"./img/photo7.jpg",
+		"./img/photo8.jpg",
+	];
+	const imageNodes = images.map((e) => {
+		return graphNode.node("image", {
+			name: "Image " + e,
+			src: e,
+			request: {mode: 'cors'},
+		});
+	});
+	await Promise.all(imageNodes.map(
+		e => e.load().catch(e => console.warn(e))
+	));
+	const textureNodes = imageNodes.map(e => {
+		return graphNode.node("texture", {
+			name: "Texture " + e.name,
+			sourceNode: e,
+			instantLoad: true,
+			update: false,
+			cleanup: () => {e.free();}
+		});
+	});
+	const closeImage = graphNode.node("image", {
+		name: "Close Image",
+		src: "./img/close.png",
+		request: {mode: 'cors'},
+	});
+	await closeImage.load().catch(e => console.warn(e));
+	const closeTexture = graphNode.node("texture", {
+		name: "Close Texture",
+		sourceNode: closeImage,
+		instantLoad: true,
+		update: false,
+		premultipliedAlpha: true,
+		cleanup: () => {closeImage.free();}
+	});
+	const cameraNode = graphNode.node("camera", {
+		position: [0,0,0],
+		target: [0,0,1000],
+		up: [0,1,0],
+		instantCalc: true
+	});
+	const engine = {
+		enable: false,
+		startTime: undefined,
+		v0: 0,
+		s0: 0,
+		count: 0,
+		total: 0
+	}
+	let projectionMatrix, projectionMatrixOrtho, lookatMatrixOrtho, fov = 35, totalAngle = 0;
+	const funcNode = graphNode.node("function", {
+		name: "Function",
+		code: () => {
+			lookatMatrixOrtho = Mat4.lookatLeft({
+				object: [0,0,0],
+				camera: [0,0,-1000],
+				up: [0,1,0]
+			});
+			projectionMatrix = Mat4.perspectiveLeft({
+				fov: fov,
+				near: 1,
+				far: 3000,
+				aspect: sr.gl.drawingBufferWidth / sr.gl.drawingBufferHeight
+			});
+			const w = sr.gl.drawingBufferWidth / 2;
+			const h = sr.gl.drawingBufferHeight / 2;
+			projectionMatrixOrtho = Mat4.orthoLeft({
+				left: -w,
+				right: w,
+				bottom: -h,
+				top: h,
+				near: 1,
+				far: 3000
+			});
+		},
+		instantCall: true,
+		parentNodes: new Set([textureNodes[0]])
+	});
+	const funcCamera = graphNode.node("function", {
+		name: "Camera",
+		code: () => {
+			const angle = Math.PI / 180 * fov / sr.gl.drawingBufferHeight * totalAngle;
+			cameraNode.rotateY(angle);
+			totalAngle = 0; 
+		}, 
+		instantCall: true,
+		parentNodes: new Set([funcNode])
+	});
+	const eventNode = graphNode.node("event", {
+		name: "Event",
+		cullFace: "back"
+	});
+	const drawTexture = sr.node("drawTexture", {
+		name: "drawTexture",
+		lookatMatrix: () => cameraNode.lookatMatrix,
+		projectionMatrix: () => projectionMatrix,
+		eventNode: eventNode
+	});
+	const randomTexture = Array.from({length: 36}, () => textureNodes[Math.floor(Math.random() * textureNodes.length)]);
+	const funcNode2 = graphNode.node("function", {
+		code: () => {
+			if(engine.enable) {
+				const t = (performance.now() - engine.startTime) / 1000;
+				const sign = -Math.sign(engine.v0);
+				const v0 = Math.abs(engine.v0);
+				const s = (v0 * t - 5 * t * t * t / 2) * sign;
+				let ds;
+				if(sign == 1) {
+					ds = Math.max(0, s - engine.s0);
+				} else {
+					ds = Math.min(0, s - engine.s0);
+				}
+				engine.s0 = s;
+				if(Math.abs(ds) < 0.001) {
+					engine.enable = false;
+					engine.count = 0;
+					engine.total = 0;
+				} else {
+					totalAngle += ds;
+				}
+			}
+			
+			const translate = 2500;
+			let i = 0;
+			for(let j = 0; j < 3; j++) {
+				const offsetY = 500 - j * 500;
+				const offsetAngle = 10 - j * 10;
+				for(let angle = 0; angle < 360; angle += 30) {
+					const texture = randomTexture[i];
+					const scale = 450 / texture.height;
+					drawTexture.textureNode = texture;
+					const s = Mat4.scale(scale, scale, scale);
+					const t = Mat4.translate(-texture.width * scale / 2, -texture.height * scale / 2 + offsetY, translate);
+					const r = Mat4.rotateYLeft(Math.PI / 180 * (angle + offsetAngle));
+					let tMatrix = Mat4.multiply(t, s);
+					tMatrix = Mat4.multiply(r, tMatrix);
+					drawTexture.transformMatrix = tMatrix;
+					drawTexture.objectId = "a" + i;
+					drawTexture.draw();
+					i++;
+				}
+			}
+		},
+		instantCall: false,
+		parentNodes: new Set([funcCamera])
+	});
+	const easeNode = graphNode.node("ease", {
+		name: "Ease",
+		data: [
+			{
+				count: 1,
+				startValue: 0,
+				endValue: 1,
+				duration: 500,
+				easeFunction: "easeoutexpo",
+			}
+		],
+	});
+	const drawImage = graphNode.node("drawTexture", {
+		name: "Draw Image",
+		lookatMatrix: lookatMatrixOrtho,
+		projectionMatrix: () => projectionMatrixOrtho,
+		transformMatrix: () => {
+			const sWidth = Math.min(1, (sr.gl.drawingBufferWidth - 40) / drawImage.textureNode.width);
+			const sHeight = Math.min(1, (sr.gl.drawingBufferHeight - 40) / drawImage.textureNode.height);
+			const s = Math.min(sWidth, sHeight) * easeNode.value;
+			const sMatrix = Mat4.scale(s, s, 1);
+			const tMatrix = Mat4.translate(-drawImage.textureNode.width / 2, -drawImage.textureNode.height / 2, 0);
+			return Mat4.multiply(sMatrix, tMatrix);
+		},
+		eventNode: eventNode,
+		enable: false
+	}).addParentNodes(funcNode2);
+	const drawCloseButton = graphNode.node("drawTexture", {
+		name: "Draw Close Button",
+		lookatMatrix: lookatMatrixOrtho,
+		projectionMatrix: () => projectionMatrixOrtho,
+		transformMatrix: () => {
+			const sWidth = Math.min(1, (sr.gl.drawingBufferWidth - 40) / drawImage.textureNode.width);
+			const sHeight = Math.min(1, (sr.gl.drawingBufferHeight - 40) / drawImage.textureNode.height);
+			const s = Math.min(sWidth, sHeight);
+			const sMatrix = Mat4.scale(s, s, 1);
+			const t1Matrix = Mat4.translate(-closeTexture.width / 2, -closeTexture.height / 2, -50);
+			const t2Matrix = Mat4.translate(drawImage.textureNode.width / 2 * s, drawImage.textureNode.height / 2 * s, 0);
+			let m = Mat4.multiply(sMatrix, t1Matrix);
+			return Mat4.multiply(t2Matrix, m);
+		},
+		premultipliedAlpha: true,
+		textureNode: closeTexture,
+		eventNode: eventNode,
+		enable: () => drawImage.enable && easeNode.value == 1
+	}).addParentNodes(drawImage);
+	for(let i = 0; i < 36; i++) {
+		eventNode.setCursorStyle({
+			id: "a" + i,
+			cursor: "pointer"
+		})
+		.addEventListener({
+			id: "a" + i,
+			event: "click",
+			phase: "down",
+			func: () => {
+				drawImage.textureNode = randomTexture[i];
+				drawImage.enable = true;
+				easeNode.start();
+			}
+		});
+	}
+	const regionNode = graphNode.node("region", {
+		name: "Region",
+		v0: [-1, -1, 0],
+		v1: [1, -1, 0],
+		v2: [1, 1, 0],
+		v3: [-1, 1, 0],
+		eventNode: eventNode,
+	});
+	const startEngine = () => {
+		if(performance.now() - engine.startTime < 100) {
+			engine.enable = true;
+			engine.v0 = engine.total / engine.count;
+			engine.count = 0;
+			engine.total = 0;
+		}
+	};
+	const engineFunc = (e) => {
+		totalAngle -= e.deltaX;
+		engine.enable = false;
+		engine.startTime = performance.now();
+		engine.s0 = 0;
+		engine.total += e.deltaX;
+		engine.count++;
+	};
+	eventNode
+	.setCursorStyle({
+		object: drawImage,
+		cursor: "default"
+	})
+	.setCursorStyle({
+		object: drawCloseButton,
+		cursor: "pointer"
+	})
+	.addEventListener({
+		object: drawImage,
+		event: "click",
+		phase: "down",
+		func: (e) => {
+			e.stopPropagation();
+		}
+	})
+	.addEventListener({
+		object: drawCloseButton,
+		event: "click",
+		phase: "down",
+		func: (e) => {
+			e.stopPropagation();
+			drawImage.enable = false;
+		}
+	})
+	.addEventListener({
+		object: regionNode,
+		event: "touchMove",
+		phase: "down",
+		func: engineFunc
+	})
+	.addEventListener({
+		object: regionNode,
+		event: "up",
+		phase: "down",
+		func: () => {
+			if(!engine.enable) {
+				startEngine();
+			}
+		}
+	})
+	.addEventListener({
+		object: regionNode,
+		event: "out",
+		phase: "down",
+		func: () => {
+			if(!engine.enable) {
+				startEngine();
+			}
+		}
+	})
+	graphNode.sort();
+	function anim() {
+		sr.update();
+		requestAnimationFrame(anim);
+	}
+	requestAnimationFrame(anim);
+}
+</script>
+</html>

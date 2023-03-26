@@ -84,9 +84,104 @@ class SilverRainEventNode extends SilverRainBaseNode {
         }
         return this;
     }
+    removeEventListener(aData) {
+        const eventData = this.__event[aData.event.toLowerCase()];
+		if(!eventData) {
+			this.__error(`Unknown event type '${aData.event}'`);
+		}
+		const eventSubdata = (aData.phase.toLowerCase() === "down") ? eventData.down : eventData.up;
+		let id;
+		if(Object.hasOwn(aData, "id")) {
+			id = aData.id;
+		} else {
+			id = aData.object.id;
+		}
+        const func = aData.func
+		const removeFunc = (id) => {
+            if(eventSubdata.has(id)) {
+				const set = eventSubdata.get(id);
+				set.delete(func);
+				if(set.size === 0) {
+					eventSubdata.delete(id);
+				}
+			}
+		}
+        if(typeof id === "object") {
+            for(const element of Array.from(id)) {
+                removeFunc(element);
+            }
+        } else {
+            removeFunc(id);
+        }
+        return this;
+	}
     __setData(argData) {
-        this.__object.set(argData.id, {needDelete: false, data: argData.data});
+		const r1 = this.__triangleInCube(argData.data.t1);
+		const r2 = this.__triangleInCube(argData.data.t2);
+		if(r1 && r2) {
+			this.__object.set(argData.id, {needDelete: false, data: argData.data});
+		}
     }
+    __triangleInCube(aTriangle) {
+		const v0 = [aTriangle.v0[0], aTriangle.v0[1], aTriangle.v0[2]];
+		const v1 = [aTriangle.v1[0], aTriangle.v1[1], aTriangle.v1[2]];
+		const v2 = [aTriangle.v2[0], aTriangle.v2[1], aTriangle.v2[2]];
+		const e0 = Vec3.subtract(v1, v0);
+		const e1 = Vec3.subtract(v2, v1);
+		const e2 = Vec3.subtract(v0, v2);
+		const normal = Vec3.cross(e0, e1);
+		const triangleVertices = [v0, v1, v2];
+		const triangleEdges = [e0, e1, e2];
+		const maxX = Math.max(v0[0], v1[0], v2[0]);
+		const minX = Math.min(v0[0], v1[0], v2[0]);
+		const maxY = Math.max(v0[1], v1[1], v2[1]);
+		const minY = Math.min(v0[1], v1[1], v2[1]);
+		const boxVertices = [
+			[-1,-1,-1],
+			[1,-1,-1],
+			[1,1,-1],
+			[-1,1,-1],
+			[-1,-1,1],
+			[1,-1,1],
+			[1,1,1],
+			[-1,1,1]
+		];
+		const boxNormals = [
+			[1,0,0],
+			[0,1,0],
+			[0,0,1],
+		];
+
+		// 1 stage
+		const checkZ = [v0[2], v1[2], v2[2]].some(e => e > 1 || e < -1);
+		if(minX > 1 || maxX < -1 || minY > 1 || maxY < -1 || checkZ) {
+			return false;
+		}
+		// 2 stage
+		const offset = Vec3.dot(normal, v0);
+		const p = boxVertices.map(e => Vec3.dot(e, normal));
+		const boxMax = Math.max(...p);
+		const boxMin = Math.min(...p);
+		if(offset > boxMax || offset < boxMin) {
+			return false;
+		}
+		// 3 stage
+		for(const triangleEdge of triangleEdges) {
+			for(const boxNormal of boxNormals) {
+				const axis = Vec3.cross(boxNormal, triangleEdge);
+				const boxV = boxVertices.map(e => Vec3.dot(e, axis));
+				const triV = triangleVertices.map(e => Vec3.dot(e, axis));
+				const boxMax = Math.max(...boxV);
+				const boxMin = Math.min(...boxV);
+				const triangleMax = Math.max(...triV);
+				const triangleMin = Math.min(...triV);
+				if(triangleMin > boxMax || triangleMax < boxMin) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
     __update() {
         if(this.__getValue(this.enable)) {
 			this.__setup();
@@ -223,7 +318,6 @@ class SilverRainEventNode extends SilverRainBaseNode {
 			const coords = this.__getCoords(position);
 			objects = this.__getObjects(coords);
 		}
-// 		console.log(aData.eventName, objects);
 		if(objects.length === 0) {
 			return;
 		}

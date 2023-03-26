@@ -9,13 +9,10 @@
 import {SilverRainBaseTextureNode} from './SilverRainBaseTextureNode.js';
 
 class SilverRainTextureNode extends SilverRainBaseTextureNode {
-
 	// Input
 	sourceNode = undefined;
 	instantLoad = false;
 	premultipliedAlpha = false;
-	// Global
-
 	constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
 		this.__loadArguments(argObject, [
@@ -44,7 +41,7 @@ class SilverRainTextureNode extends SilverRainBaseTextureNode {
 		const sourceNode = this.__getValue(this.sourceNode);
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
-        this.gl.pixelStorei(this.gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultipliedAlpha);
+        this.gl.pixelStorei(this.gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.__getValue(this.premultipliedAlpha));
         switch(sourceNode.constructor.name) {
             case "ImageBitmap":
             {
@@ -63,7 +60,6 @@ class SilverRainTextureNode extends SilverRainBaseTextureNode {
                 this.generateMipmap();
                 break;
             }
-//             case "SilverRainCameraNode":
             case "SilverRainVideoNode":
             {
                 this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, sourceNode.video);
@@ -72,7 +68,7 @@ class SilverRainTextureNode extends SilverRainBaseTextureNode {
             }
         }
         this.gl.bindTexture(this.gl.TEXTURE_2D, null);
-		return;
+		return this;
     }
     __update() {
         if(this.__getValue(this.enable) && this.__getValue(this.update)) {

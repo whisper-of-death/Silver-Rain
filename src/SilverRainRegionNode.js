@@ -34,6 +34,10 @@ class SilverRainRegionNode extends SilverRainBaseNode {
 		"eventNode",
 		"instantDraw",
 	];
+	// v3 *-----* v2
+	//    |     |
+	//    |     |
+	// v0 *-----* v1
 	constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
 		this.__loadArguments(argObject, this.__inputArray);
@@ -61,8 +65,9 @@ class SilverRainRegionNode extends SilverRainBaseNode {
 			const v1 = calc([...input.v1, 1]);
 			const v2 = calc([...input.v2, 1]);
 			const v3 = calc([...input.v3, 1]);
+			const id = input.objectId ? input.objectId : this.id;
 			input.eventNode.__setData({
-                id: input.objectId,
+                id: id,
                 data: {
                     t1: {
                         v0: v1,

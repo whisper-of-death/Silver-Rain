@@ -44,6 +44,10 @@ const Nodes = new Map([
 		class: "SilverRainDrawTextNode",
 		file: "./SilverRainDrawTextNode.js"
 	}],
+	["drawtexturecubemap", {
+		class: "SilverRainDrawTextureCubemapNode",
+		file: "./SilverRainDrawTextureCubemapNode.js"
+	}],
 	["drawtexture", {
 		class: "SilverRainDrawTextureNode",
 		file: "./SilverRainDrawTextureNode.js"
@@ -76,6 +80,10 @@ const Nodes = new Map([
 		class: "SilverRainTextNode",
 		file: "./SilverRainTextNode.js"
 	}],
+	["texturecubemap", {
+		class: "SilverRainTextureCubemapNode",
+		file: "./SilverRainTextureCubemapNode.js"
+	}],
 	["texture", {
 		class: "SilverRainTextureNode",
 		file: "./SilverRainTextureNode.js"
@@ -103,6 +111,14 @@ const Nodes = new Map([
 	["region", {
 		class: "SilverRainRegionNode",
 		file: "./SilverRainRegionNode.js"
+	}],
+	["skybox", {
+		class: "SilverRainSkyBoxNode",
+		file: "./SilverRainSkyBoxNode.js"
+	}],
+	["camera", {
+		class: "SilverRainCameraNode",
+		file: "./SilverRainCameraNode.js"
 	}],
 	// Effects
 	["effects/luminance", {

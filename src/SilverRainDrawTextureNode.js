@@ -19,9 +19,11 @@ class SilverRainDrawTextureNode extends SilverRainBaseNode {
 	instantDraw = false;
 	eventNode = undefined;
 	objectId = undefined;
-	framebufferNode = undefined;
 	clear = false;
 	clearColor = undefined;
+	framebufferNode = undefined;
+	width = undefined;
+	height = undefined;
 	// Global
 	// Local
 	__fSrc = undefined;
@@ -72,7 +74,9 @@ class SilverRainDrawTextureNode extends SilverRainBaseNode {
 			"objectId",
 			"clear",
 			"clearColor",
-			"framebufferNode"
+			"framebufferNode",
+			"width",
+			"height"
 		]);
         this.__fSrc = `
 			precision ${this.root.precision} float;
@@ -110,7 +114,6 @@ class SilverRainDrawTextureNode extends SilverRainBaseNode {
 	draw() {
         const pData = this.constructor.pData;
 		const textureNode = this.__getValue(this.textureNode);
-// 		console.log(textureNode.name);
 		const transformMatrix = this.__getValue(this.transformMatrix);
 		const lookatMatrix = this.__getValue(this.lookatMatrix);
 		const projectionMatrix = this.__getValue(this.projectionMatrix);
@@ -118,26 +121,42 @@ class SilverRainDrawTextureNode extends SilverRainBaseNode {
 		const framebufferNode = this.__getValue(this.framebufferNode);
 		const clear = this.__getValue(this.clear);
 		const clearColor = this.__getValue(this.clearColor);
-// 		console.log(this.name, framebufferNode);
-//         this.gl.enable(this.gl.BLEND);
 		if(premultipliedAlpha) {
 			this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
 		} else {
 			this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
 		}
-        const width = textureNode.width;
-        const height = textureNode.height;
+		const input = {
+			width: this.__getValue(this.width),
+			height: this.__getValue(this.height),
+		}
+		let width, height, uvWidth, uvHeight;
+		if(input.width > 0) {
+			width = input.width;
+			uvWidth = input.width / textureNode.width;
+		} else {
+			width = textureNode.width;
+			uvWidth = 1;
+		}
+		if(input.height > 0) {
+			height = input.height;
+			uvHeight = input.height / textureNode.height;
+		} else {
+			height = textureNode.height;
+			uvHeight = 1;
+		}
         const vertexData = [
             0,      0,
             width,  0,
             width,  height,
             0,      height,
         ];
+
         const textureData = [
             0, 0,
-            1, 0,
-            1, 1,
-            0, 1,
+            uvWidth, 0,
+            uvWidth, uvHeight,
+            0, uvHeight,
         ];
 		this.gl.useProgram(pData.program);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, pData.buffer.vertex);
@@ -151,10 +170,6 @@ class SilverRainDrawTextureNode extends SilverRainBaseNode {
         this.gl.enableVertexAttribArray(pData.attribute.texture);
 
         this.gl.activeTexture(this.gl.TEXTURE0);
-// 		if(!this.gl.isTexture(textureNode.texture)) {
-// 			consol.log("error");
-// 		}
-// 		console.log(textureNode.texture);
         this.gl.bindTexture(this.gl.TEXTURE_2D, textureNode.texture);
         this.gl.uniform1i(pData.uniform.texture, 0);
 
@@ -171,7 +186,6 @@ class SilverRainDrawTextureNode extends SilverRainBaseNode {
 			this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, framebufferNode.framebuffer);
 			this.gl.viewport(0,0, framebufferNode.width, framebufferNode.height);
 			if(clear) {
-// 				console.log(this.name);
 				framebufferNode.__clear();
 			}
 			this.gl.drawElements(this.gl.TRIANGLE_FAN, 4, this.gl.UNSIGNED_BYTE, 0);
@@ -220,7 +234,6 @@ class SilverRainDrawTextureNode extends SilverRainBaseNode {
                     },
                 }
             });
-// 			console.log(v1, v2, v3, v4);
 		}
 	}
     __update() {
