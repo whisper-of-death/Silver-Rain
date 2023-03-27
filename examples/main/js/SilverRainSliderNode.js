@@ -382,7 +382,10 @@ class SilverRainSliderNode extends SilverRainBaseNode {
 			object: drawPauseButton,
 			event: "click",
 			phase: "down",
-			func: pauseFunc
+			func: (e) => {
+				e.stopPropagation();
+				pauseFunc();
+			}
 		});
         this.__graph.sort();
 		this.ready = true;

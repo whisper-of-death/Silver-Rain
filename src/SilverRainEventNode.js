@@ -42,7 +42,7 @@ class SilverRainEventNode extends SilverRainBaseNode {
         super(argObject, argDataVar);
 		this.__loadArguments(argObject, [
 			"cullFace",
-			"coordSystem"
+			"coordSystem",
 		]);
 		this.__setCompFunc();
 		this.__init();
@@ -224,7 +224,6 @@ class SilverRainEventNode extends SilverRainBaseNode {
 		}, false);
 		this.gl.canvas.addEventListener("pointermove", (e) => {
 			if(!this.__getValue(this.enable)) {return;}
-			this.__status.move = true;
 			const position = this.__getPointerPosition(e, true);
 			const coords = this.__getCoords(position);
 			const objects = this.__getObjects(coords).sort(this.__compFunc);
@@ -234,18 +233,23 @@ class SilverRainEventNode extends SilverRainBaseNode {
 			if(this.__status.leftButtonDown) {
 				const x = e.clientX;
 				const y = e.clientY;
-				this.__run({
-					event: e,
-					eventName: "touchmove",
-					objects: objects,
-					position: position,
-					properties: {
-						deltaX: x - this.__status.x,
-						deltaY: y - this.__status.y,
-					}
-				});
-				this.__status.x = x;
-				this.__status.y = y;
+				const deltaX = x - this.__status.x;
+				const deltaY = y - this.__status.y;
+				if(deltaX !== 0 || deltaY !== 0) {
+					this.__status.move = true;
+					this.__run({
+						event: e,
+						eventName: "touchmove",
+						objects: objects,
+						position: position,
+						properties: {
+							deltaX: deltaX,
+							deltaY: deltaY,
+						}
+					});
+					this.__status.x = x;
+					this.__status.y = y;
+				}
 			}
             let styleCursor = undefined;
 			if(outObjects.length > 0) {
