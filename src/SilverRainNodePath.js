@@ -298,6 +298,34 @@ const Nodes = new Map([
 		class: "SilverRainCircleOpenNode",
 		file: "./Transitions/SilverRainCircleOpenNode.js"
 	}],
+	["transitions/crosswarp", {
+		class: "SilverRainCrossWarpNode",
+		file: "./Transitions/SilverRainCrossWarpNode.js"
+	}],
+	["transitions/doorway", {
+		class: "SilverRainDoorwayNode",
+		file: "./Transitions/SilverRainDoorwayNode.js"
+	}],
+	["transitions/pixelize", {
+		class: "SilverRainPixelizeNode",
+		file: "./Transitions/SilverRainPixelizeNode.js"
+	}],
+	["transitions/randomsquares", {
+		class: "SilverRainRandomSquaresNode",
+		file: "./Transitions/SilverRainRandomSquaresNode.js"
+	}],
+	["transitions/squareswire", {
+		class: "SilverRainSquaresWireNode",
+		file: "./Transitions/SilverRainSquaresWireNode.js"
+	}],
+	["transitions/swap", {
+		class: "SilverRainSwapNode",
+		file: "./Transitions/SilverRainSwapNode.js"
+	}],
+	["transitions/wind", {
+		class: "SilverRainWindNode",
+		file: "./Transitions/SilverRainWindNode.js"
+	}],
 	// Geometries
 	["geometries/circle", {
 		class: "SilverRainCircleNode",

@@ -12,16 +12,19 @@ class SilverRainAtlasNode extends SilverRainBaseTextureNode {
 	// Input
 	imageSrc = undefined;
 	jsonSrc = undefined;
+	premultipliedAlpha = false;
 	request = {};
 	// Global
-	image = new Image();
 	data = new Map();
+	// Local
+	__image = new Image();
 	constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
 		this.__loadArguments(argObject, [
 			"imageSrc",
 			"jsonSrc",
-			"request"
+			"request",
+			"premultipliedAlpha"
 		]);
     }
     async load() {
@@ -54,15 +57,15 @@ class SilverRainAtlasNode extends SilverRainBaseTextureNode {
 			.then(response => response.blob())
 			.then((blob) => {
 				const objectURL = URL.createObjectURL(blob);
-				this.image.onload = () => {
+				this.__image.onload = () => {
 					URL.revokeObjectURL(objectURL);
 					ok(this);
 				};
-				this.image.onerror = (e) => {
+				this.__image.onerror = (e) => {
 					console.error(e);
 					error(new Error(this.__errorMessage(imageSrc)));
 				};
-				this.image.src = objectURL;
+				this.__image.src = objectURL;
 			})
 			.catch((e) => {
 				console.error(e);
@@ -86,8 +89,8 @@ class SilverRainAtlasNode extends SilverRainBaseTextureNode {
 		return `Error loading file '${aMsg}'`;
 	}
     __init() {
-        this.width = this.image.width;
-        this.height = this.image.height;
+        this.width = this.__image.width;
+        this.height = this.__image.height;
         this.__checkPowerOfTwo();
         this.__setMagFilter();
         this.__setMinFilter();
@@ -96,10 +99,14 @@ class SilverRainAtlasNode extends SilverRainBaseTextureNode {
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
         this.gl.pixelStorei(this.gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, this.premultipliedAlpha);
-		this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.image);
+		this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, this.__image);
 		this.generateMipmap();
         this.gl.bindTexture(this.gl.TEXTURE_2D, null);
     }
+    freeImage() {
+		this.__image = null;
+		return this;
+	}
 }
 
 export {SilverRainAtlasNode};

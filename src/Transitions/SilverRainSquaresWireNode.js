@@ -3,22 +3,22 @@
 //          Copyright 2023 Leonid Petrunya
 //               All rights reserved
 // ----------------------------------------------
-//           SilverRainCrossHatchNode
+//           SilverRainSquaresWireNode
 // ----------------------------------------------
 
 import {SilverRainTransitionNode} from './../SilverRainTransitionNode.js';
 
-class SilverRainCrossHatchNode extends SilverRainTransitionNode {
+class SilverRainSquaresWireNode extends SilverRainTransitionNode {
 	// Input
-	center = [0.5,0.5];
-	threshold = 3;
-	fadeEdge = 0.1;
+	size = [10, 10];
+	direction = [1, -0.5];
+	smoothness = 1.6;
 	constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
 		this.__loadArguments(argObject, [
-			"center",
-			"threshold",
-			"fadeEdge",
+			"size",
+			"direction",
+			"smoothness",
 		]);
 		this.__createFragmentShaderSource();
         this.__init();
@@ -32,33 +32,25 @@ class SilverRainCrossHatchNode extends SilverRainTransitionNode {
         this.__fSrc = `
             precision ${this.root.precision} float;
 			uniform float u_mix;
+			uniform vec2 u_size;
+			uniform vec2 u_direction;
+			uniform float u_smoothness;
 			uniform sampler2D u_texture1;
 			uniform sampler2D u_texture2;
-			uniform vec2 u_center;
-			uniform float u_threshold;
-			uniform float u_fadeEdge;
 			varying vec2 v_texCoord;
-			float rand(vec2 co) {
-				return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-			}
+			const vec2 center = vec2(0.5, 0.5);
 			void main() {
+				vec2 v = normalize(u_direction);
+				v /= abs(v.x)+abs(v.y);
+				float d = v.x * center.x + v.y * center.y;
+				float pr = smoothstep(-u_smoothness, 0.0, v.x * v_texCoord.x + v.y * v_texCoord.y - (d-0.5+u_mix*(1.+u_smoothness)));
+				vec2 squarep = fract(v_texCoord*u_size);
+				vec2 squaremin = vec2(pr/2.0);
+				vec2 squaremax = vec2(1.0 - pr/2.0);
+				float a = (1.0 - step(u_mix, 0.0)) * step(squaremin.x, squarep.x) * step(squaremin.y, squarep.y) * step(squarep.x, squaremax.x) * step(squarep.y, squaremax.y);
 				vec4 color1 = texture2D(u_texture1, v_texCoord);
 				vec4 color2 = texture2D(u_texture2, v_texCoord);
-				float dist = distance(u_center, v_texCoord) / u_threshold;
-				float r = u_mix - min(rand(vec2(v_texCoord.y, 0.0)), rand(vec2(0.0, v_texCoord.x)));
-				gl_FragColor = mix(
-					color1,
-					color2,
-					mix(
-						0.0,
-						mix(
-							step(dist, r),
-							1.0,
-							smoothstep(1.0-u_fadeEdge, 1.0, u_mix)
-						),
-						smoothstep(0.0, u_fadeEdge, u_mix)
-					)
-				);
+				gl_FragColor = mix(color1, color2, a);
 			}
         `;
 	}
@@ -87,9 +79,9 @@ class SilverRainCrossHatchNode extends SilverRainTransitionNode {
             texture2: undefined,
 			dimension: undefined,
             mix: undefined,
-            center: undefined,
-            threshold: undefined,
-            fadeEdge: undefined,
+            size: undefined,
+            direction: undefined,
+            smoothness: undefined
         },
         buffer: {
             vertex: undefined,
@@ -98,15 +90,15 @@ class SilverRainCrossHatchNode extends SilverRainTransitionNode {
         },
     }
     __getUniformLocation() {
-        this.constructor.__draw.uniform.center = this.gl.getUniformLocation(this.constructor.__draw.program, 'u_center');
-        this.constructor.__draw.uniform.threshold = this.gl.getUniformLocation(this.constructor.__draw.program, 'u_threshold');
-        this.constructor.__draw.uniform.fadeEdge = this.gl.getUniformLocation(this.constructor.__draw.program, 'u_fadeEdge');
+        this.constructor.__draw.uniform.size = this.gl.getUniformLocation(this.constructor.__draw.program, 'u_size');
+        this.constructor.__draw.uniform.direction = this.gl.getUniformLocation(this.constructor.__draw.program, 'u_direction');
+        this.constructor.__draw.uniform.smoothness = this.gl.getUniformLocation(this.constructor.__draw.program, 'u_smoothness');
     }
     __setUniform() {
-        this.gl.uniform2fv(this.constructor.__draw.uniform.center, this.__getValue(this.center));
-        this.gl.uniform1f(this.constructor.__draw.uniform.threshold, this.__getValue(this.threshold));
-        this.gl.uniform1f(this.constructor.__draw.uniform.fadeEdge, this.__getValue(this.fadeEdge));
+        this.gl.uniform2fv(this.constructor.__draw.uniform.size, this.__getValue(this.size));
+        this.gl.uniform2fv(this.constructor.__draw.uniform.direction, this.__getValue(this.direction));
+        this.gl.uniform1f(this.constructor.__draw.uniform.smoothness, this.__getValue(this.smoothness));
     }
 }
 
-export {SilverRainCrossHatchNode};
+export {SilverRainSquaresWireNode};
