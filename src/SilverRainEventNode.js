@@ -3,7 +3,7 @@
 //          Copyright 2023 Leonid Petrunya
 //               All rights reserved
 // ----------------------------------------------
-//              SilverRainEventNode
+//               SilverRainEventNode
 // ----------------------------------------------
 
 import {SilverRainBaseNode} from './SilverRainBaseNode.js';
@@ -13,6 +13,8 @@ class SilverRainEventNode extends SilverRainBaseNode {
 	// Input
 	cullFace = "none";
 	coordSystem = "left";
+	deltaX = 1;
+	deltaY = 1;
 	// Global
 	// Local
 	__compFunc = undefined;
@@ -36,13 +38,17 @@ class SilverRainEventNode extends SilverRainBaseNode {
 		leftButtonDown: false,
 		move: false,
 		x: 0,
-		y: 0
+		y: 0,
+		movementX: 0,
+		movementY: 0
 	};
     constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
 		this.__loadArguments(argObject, [
 			"cullFace",
 			"coordSystem",
+			"deltaX",
+			"deltaY",
 		]);
 		this.__setCompFunc();
 		this.__init();
@@ -202,8 +208,10 @@ class SilverRainEventNode extends SilverRainBaseNode {
 			});
 			if(e.button === 0) {
 				this.__status.leftButtonDown = true;
-				this.__status.x = e.clientX;
-				this.__status.y = e.clientY;
+				this.__status.clientX = e.clientX;
+				this.__status.clientY = e.clientY;
+				this.__status.movementX = 0;
+				this.__status.movementY = 0;
 			}
 			this.__status.move = false;
 		}, false);
@@ -223,32 +231,42 @@ class SilverRainEventNode extends SilverRainBaseNode {
 			this.__status.move = false;
 		}, false);
 		this.gl.canvas.addEventListener("pointermove", (e) => {
-			if(!this.__getValue(this.enable)) {return;}
+			const input = {
+				deltaX: this.__getValue(this.deltaX),
+				deltaY: this.__getValue(this.deltaY),
+				enable: this.__getValue(this.enable),
+			};
+			if(!input.enable) {return;}
 			const position = this.__getPointerPosition(e, true);
 			const coords = this.__getCoords(position);
 			const objects = this.__getObjects(coords).sort(this.__compFunc);
             const objectsId = objects.map(function(e) {return e.id;});
 			const overObjects = objects.filter(v => !this.__objectsId.includes(v.id));
             const outObjects = this.__objects.filter(v => !objectsId.includes(v.id));
+			const movementX = e.clientX - this.__status.clientX;
+			const movementY = e.clientY - this.__status.clientY;
+			this.__status.clientX = e.clientX;
+			this.__status.clientY = e.clientY;
 			if(this.__status.leftButtonDown) {
-				const x = e.clientX;
-				const y = e.clientY;
-				const deltaX = x - this.__status.x;
-				const deltaY = y - this.__status.y;
-				if(deltaX !== 0 || deltaY !== 0) {
+				this.__status.movementX += movementX;
+				this.__status.movementY += movementY;
+				if(Math.abs(movementX) > input.deltaX || Math.abs(movementY) > input.deltaY) {
 					this.__status.move = true;
+				}
+				if(Math.abs(this.__status.movementX) > input.deltaX || Math.abs(this.__status.movementY) > input.deltaY) {
+					this.__status.move = true;
+				}
+				if(this.__status.move) {
 					this.__run({
 						event: e,
 						eventName: "touchmove",
 						objects: objects,
 						position: position,
 						properties: {
-							deltaX: deltaX,
-							deltaY: deltaY,
+							deltaX: movementX,
+							deltaY: movementY,
 						}
 					});
-					this.__status.x = x;
-					this.__status.y = y;
 				}
 			}
             let styleCursor = undefined;

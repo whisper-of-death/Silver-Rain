@@ -136,9 +136,9 @@ class SilverRainDrawSpriteNode extends SilverRainBaseNode {
 					0,      height,
 				];
 				const textureX0 = sData.x / atlasNode.width;
-				const textureY0 = sData.y / atlasNode.height;
 				const textureX1 = (sData.x + sData.width) / atlasNode.width;
-				const textureY1 = (sData.y + sData.height) / atlasNode.height;
+				const textureY0 = (atlasNode.height - sData.y - sData.height) / atlasNode.height;
+				const textureY1 = (atlasNode.height - sData.y) / atlasNode.height;
 				const textureData = [
 					textureX0, textureY0,
 					textureX1, textureY0,
