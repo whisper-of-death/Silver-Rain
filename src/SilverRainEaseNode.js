@@ -138,14 +138,16 @@ class SilverRainEaseNode extends SilverRainBaseNode {
 	}
 	async __processList(argData) {
 		for(const element of argData) {
-			const count = Object.hasOwn(element, "count") ? element.count : 1;
+			const count = Object.hasOwn(element, "count") ? this.__getValue(element.count) : 1;
 			this.__dispatchEvent("start", element);
 			for(let i = 1; i <= count; i++) {
+				this.__dispatchEvent("startIteration", element);
 				if(Object.hasOwn(element, "children")) {
 					await this.__processList(element.children);
 				} else {
 					await this.__processInterval(element);
 				}
+				this.__dispatchEvent("endIteration", element);
 			}
 			this.__dispatchEvent("end", element);
 		}
@@ -173,7 +175,6 @@ class SilverRainEaseNode extends SilverRainBaseNode {
 			const timeoutFunc = () => {
 				this.__value = 1;
 				this.__calculateActualValue();
-				this.__dispatchEvent("endIteration", argTimeline);
 				this.__disableControllers();
 				ok();
 			}
@@ -219,7 +220,6 @@ class SilverRainEaseNode extends SilverRainBaseNode {
 			}
 			this.__value = 0;
 			this.__calculateActualValue();
-			this.__dispatchEvent("startIteration", argTimeline);
 			timeoutId = setTimeout(timeoutFunc, this.__timeline.duration);
 		});
 	}

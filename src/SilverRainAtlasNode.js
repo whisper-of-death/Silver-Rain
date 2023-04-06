@@ -103,6 +103,9 @@ class SilverRainAtlasNode extends SilverRainBaseTextureNode {
 		this.generateMipmap();
         this.gl.bindTexture(this.gl.TEXTURE_2D, null);
     }
+    spriteInfo(aName) {
+		return this.data.get(aName);
+	}
     freeImage() {
 		this.__image = null;
 		return this;
