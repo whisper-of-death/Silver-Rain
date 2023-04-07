@@ -1,0 +1,183 @@
+{
+	"frames": [
+		{
+			"filename": "ball-aqua",
+			"frame": {
+				"x": 1,
+				"y": 1,
+				"w": 55,
+				"h": 55
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 55,
+				"h": 55
+			},
+			"sourceSize": {
+				"w": 55,
+				"h": 55
+			}
+		},
+		{
+			"filename": "ball-blue",
+			"frame": {
+				"x": 58,
+				"y": 1,
+				"w": 55,
+				"h": 55
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 55,
+				"h": 55
+			},
+			"sourceSize": {
+				"w": 55,
+				"h": 55
+			}
+		},
+		{
+			"filename": "ball-green",
+			"frame": {
+				"x": 115,
+				"y": 1,
+				"w": 55,
+				"h": 55
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 55,
+				"h": 55
+			},
+			"sourceSize": {
+				"w": 55,
+				"h": 55
+			}
+		},
+		{
+			"filename": "ball-pink",
+			"frame": {
+				"x": 172,
+				"y": 1,
+				"w": 55,
+				"h": 55
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 55,
+				"h": 55
+			},
+			"sourceSize": {
+				"w": 55,
+				"h": 55
+			}
+		},
+		{
+			"filename": "ball-red",
+			"frame": {
+				"x": 229,
+				"y": 1,
+				"w": 55,
+				"h": 55
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 55,
+				"h": 55
+			},
+			"sourceSize": {
+				"w": 55,
+				"h": 55
+			}
+		},
+		{
+			"filename": "ball-violet",
+			"frame": {
+				"x": 286,
+				"y": 1,
+				"w": 55,
+				"h": 55
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 55,
+				"h": 55
+			},
+			"sourceSize": {
+				"w": 55,
+				"h": 55
+			}
+		},
+		{
+			"filename": "ball-yellow",
+			"frame": {
+				"x": 343,
+				"y": 1,
+				"w": 55,
+				"h": 55
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 55,
+				"h": 55
+			},
+			"sourceSize": {
+				"w": 55,
+				"h": 55
+			}
+		},
+		{
+			"filename": "cell-bgr",
+			"frame": {
+				"x": 400,
+				"y": 1,
+				"w": 69,
+				"h": 69
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 69,
+				"h": 69
+			},
+			"sourceSize": {
+				"w": 69,
+				"h": 69
+			}
+		}
+	],
+	"meta": {
+		"app": "http://www.codeandweb.com/texturepacker",
+		"version": "1.0",
+		"image": "spritesheet.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 470,
+			"h": 71
+		},
+		"scale": "1"
+	}
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>WebGL Framework "Silver Rain" - Game Lines</title>
+<meta charset="utf-8">
+<style>
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
+html, body {
+	overflow: hidden;
+}
+</style>
+</head>
+<body>
+</body>
+<script type="module">
+import {SilverRain} from "./../../src/SilverRain.js";
+import {Mat4} from "./../../src/SilverRainMath.js";
+
+init();
+
+async function init() {
+	const sr = new SilverRain({
+		webglVersion: 1,
+		resize: true,
+	});
+	sr.defineNodes(
+		{
+			name: "lines",
+			class: "SilverRainLinesNode",
+			file: "./../examples/lines/js/SilverRainLinesNode.js"
+		}
+	);
+	await sr.importNodes(
+		"graph",
+		"lines"
+	);
+	const graphNode = sr.node("graph", {
+		clear: true,
+		clearColor: [1,1,1,1]
+	});
+	sr.rootNode = graphNode;
+	
+	const linesNode = graphNode.node("lines", {
+		atlasImageSrc: "./../lines/atlas/atlas.png",
+		atlasJsonSrc: "./../lines/atlas/atlas.json",
+	});
+	await linesNode.init();
+
+	graphNode.sort();
+	
+	function anim() {
+		sr.update();
+		requestAnimationFrame(anim);
+	}
+	requestAnimationFrame(anim);
+}
+
+</script>
+</html>
