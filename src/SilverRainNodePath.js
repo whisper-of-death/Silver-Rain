@@ -20,9 +20,9 @@ const Nodes = new Map([
 		class: "SilverRainGenerateNode",
 		file: "./SilverRainGenerateNode.js"
 	}],
-	["3dcube", {
-		class: "SilverRain3dCubeNode",
-		file: "./SilverRain3dCubeNode.js"
+	["cube3d", {
+		class: "SilverRainCube3dNode",
+		file: "./SilverRainCube3dNode.js"
 	}],
 	["atlas", {
 		class: "SilverRainAtlasNode",

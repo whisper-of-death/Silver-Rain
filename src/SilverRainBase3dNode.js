@@ -3,7 +3,7 @@
 //          Copyright 2023 Leonid Petrunya
 //               All rights reserved
 // ----------------------------------------------
-//             SilverRainBase3dNode
+//              SilverRainBase3dNode
 // ----------------------------------------------
 
 import {SilverRainBaseNode} from './SilverRainBaseNode.js';

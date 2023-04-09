@@ -16,10 +16,10 @@ class SilverRainDraw3dNode extends SilverRainBaseNode {
 	transformMatrix = Mat4.identity();
 	lookatMatrix = Mat4.identity();
 	instantDraw = false;
-	// Global
-	fSrc = undefined;
+	// Local
+	__fSrc = undefined;
 	// Static
-	static pData = {
+	static __data = {
 		vSrc: `
 			uniform mat4 u_transformMatrix;
 			uniform mat4 u_projectionMatrix;
@@ -29,7 +29,6 @@ class SilverRainDraw3dNode extends SilverRainBaseNode {
 				gl_Position = u_projectionMatrix * u_lookatMatrix * u_transformMatrix * a_vertex;
 			}
 		`,
-        ready: false,
         program: undefined,
         attribute: {
             vertex: undefined,
@@ -50,15 +49,15 @@ class SilverRainDraw3dNode extends SilverRainBaseNode {
 			"projectionMatrix",
 			"instantDraw",
 		]);
-        this.fSrc = `
+        this.__fSrc = `
 			precision ${this.root.precision} float;
 			uniform vec4 u_diffuseColor;
 			void main() {
 				gl_FragColor = u_diffuseColor;
 			}
 		`;
-		if(!this.constructor.pData.ready) {
-			this.createProgram();
+		if(!this.constructor.__data.program) {
+			this.__createProgram();
 		}
         if(this.__getValue(this.enable) && this.__getValue(this.instantDraw)) {
             this.__setup();
@@ -66,33 +65,32 @@ class SilverRainDraw3dNode extends SilverRainBaseNode {
             this.__cleanup();
         }
     }
-	createProgram() {
-        const pData = this.constructor.pData;
-        pData.program = this.root.program(pData.vSrc, this.fSrc);
-        pData.attribute.vertex = this.gl.getAttribLocation(pData.program, "a_vertex");
-        pData.uniform.diffuseColor = this.gl.getUniformLocation(pData.program, 'u_diffuseColor');
-        pData.uniform.transformMatrix = this.gl.getUniformLocation(pData.program, 'u_transformMatrix');
-        pData.uniform.lookatMatrix = this.gl.getUniformLocation(pData.program, 'u_lookatMatrix');
-        pData.uniform.projectionMatrix = this.gl.getUniformLocation(pData.program, 'u_projectionMatrix');
-        pData.ready = true;
+	__createProgram() {
+        const __data = this.constructor.__data;
+        __data.program = this.root.program(__data.vSrc, this.__fSrc);
+        __data.attribute.vertex = this.gl.getAttribLocation(__data.program, "a_vertex");
+        __data.uniform.diffuseColor = this.gl.getUniformLocation(__data.program, 'u_diffuseColor');
+        __data.uniform.transformMatrix = this.gl.getUniformLocation(__data.program, 'u_transformMatrix');
+        __data.uniform.lookatMatrix = this.gl.getUniformLocation(__data.program, 'u_lookatMatrix');
+        __data.uniform.projectionMatrix = this.gl.getUniformLocation(__data.program, 'u_projectionMatrix');
 	}
 	draw() {
-        const pData = this.constructor.pData;
+        const __data = this.constructor.__data;
 		const materials = this.__getValue(this.objectNode).material;
 		const transformMatrix = this.__getValue(this.transformMatrix);
 		const lookatMatrix = this.__getValue(this.lookatMatrix);
 		const projectionMatrix = this.__getValue(this.projectionMatrix);
 
-		this.gl.useProgram(pData.program);
-		this.gl.uniformMatrix4fv(pData.uniform.transformMatrix, false, Mat4.transpose(transformMatrix));
-		this.gl.uniformMatrix4fv(pData.uniform.lookatMatrix, false, Mat4.transpose(lookatMatrix));
-		this.gl.uniformMatrix4fv(pData.uniform.projectionMatrix, false, Mat4.transpose(projectionMatrix));
+		this.gl.useProgram(__data.program);
+		this.gl.uniformMatrix4fv(__data.uniform.transformMatrix, false, Mat4.transpose(transformMatrix));
+		this.gl.uniformMatrix4fv(__data.uniform.lookatMatrix, false, Mat4.transpose(lookatMatrix));
+		this.gl.uniformMatrix4fv(__data.uniform.projectionMatrix, false, Mat4.transpose(projectionMatrix));
 		for(const [key, material] of materials.entries()) {
 			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, material.buffer.vertex);
-			this.gl.vertexAttribPointer(pData.attribute.vertex, 3, this.gl.FLOAT, false, 0, 0);
-			this.gl.enableVertexAttribArray(pData.attribute.vertex);
+			this.gl.vertexAttribPointer(__data.attribute.vertex, 3, this.gl.FLOAT, false, 0, 0);
+			this.gl.enableVertexAttribArray(__data.attribute.vertex);
 			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
-			this.gl.uniform4fv(pData.uniform.diffuseColor, material.diffuseColor);
+			this.gl.uniform4fv(__data.uniform.diffuseColor, material.diffuseColor);
 			this.gl.viewport(0,0, this.gl.drawingBufferWidth, this.gl.drawingBufferHeight);
 			this.gl.drawArrays(this.gl.TRIANGLES, 0, material.data.vertex.length / 3);
 		}

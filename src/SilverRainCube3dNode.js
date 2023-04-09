@@ -3,12 +3,12 @@
 //          Copyright 2023 Leonid Petrunya
 //               All rights reserved
 // ----------------------------------------------
-//             SilverRain3dCubeNode
+//              SilverRainCube3dNode
 // ----------------------------------------------
 
 import {SilverRainBase3dNode} from './SilverRainBase3dNode.js';
 
-class SilverRain3dCubeNode extends SilverRainBase3dNode {
+class SilverRainCube3dNode extends SilverRainBase3dNode {
 
 	constructor(argObject = {}, argDataVar = {}) {
         super(argObject, argDataVar);
@@ -43,4 +43,4 @@ class SilverRain3dCubeNode extends SilverRainBase3dNode {
 
 }
 
-export {SilverRain3dCubeNode};
+export {SilverRainCube3dNode};
