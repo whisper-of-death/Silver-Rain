@@ -20,10 +20,6 @@ const Nodes = new Map([
 		class: "SilverRainGenerateNode",
 		file: "./SilverRainGenerateNode.js"
 	}],
-	["cube3d", {
-		class: "SilverRainCube3dNode",
-		file: "./SilverRainCube3dNode.js"
-	}],
 	["atlas", {
 		class: "SilverRainAtlasNode",
 		file: "./SilverRainAtlasNode.js"
@@ -330,6 +326,11 @@ const Nodes = new Map([
 	["geometries/circle", {
 		class: "SilverRainCircleNode",
 		file: "./Geometries/SilverRainCircleNode.js"
+	}],
+	// 3d
+	["cube3d", {
+		class: "SilverRainCube3dNode",
+		file: "./3d/SilverRainCube3dNode.js"
 	}],
 ])
 

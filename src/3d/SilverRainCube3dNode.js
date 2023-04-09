@@ -6,7 +6,7 @@
 //              SilverRainCube3dNode
 // ----------------------------------------------
 
-import {SilverRainBase3dNode} from './SilverRainBase3dNode.js';
+import {SilverRainBase3dNode} from './../SilverRainBase3dNode.js';
 
 class SilverRainCube3dNode extends SilverRainBase3dNode {
 
